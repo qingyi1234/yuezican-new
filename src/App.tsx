@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { defaultProfileOptions } from "./data";
 import { buildRecommendation, getDefaultProfile } from "./recommender";
 import type {
@@ -30,6 +30,14 @@ const activityLabels: Record<ActivityLevel, string> = {
 };
 
 type PageMode = "setup" | "plan";
+type SavedPlan = {
+  id: string;
+  name: string;
+  createdAt: string;
+  profile: UserProfile;
+};
+
+const savedPlanKey = "yuezican_saved_plans_v1";
 
 function toggleList<T extends string>(list: T[], value: T) {
   return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
@@ -40,6 +48,20 @@ function parseAllergies(value: string) {
     .split(/[，,、\s]+/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function readSavedPlans(): SavedPlan[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(savedPlanKey);
+    return raw ? (JSON.parse(raw) as SavedPlan[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSavedPlans(plans: SavedPlan[]) {
+  window.localStorage.setItem(savedPlanKey, JSON.stringify(plans));
 }
 
 function Chip({
@@ -323,6 +345,8 @@ function App() {
   const [page, setPage] = useState<PageMode>("setup");
   const [profile, setProfile] = useState<UserProfile>(getDefaultProfile);
   const [allergyText, setAllergyText] = useState("");
+  const [savedPlans, setSavedPlans] = useState<SavedPlan[]>([]);
+  const [saveMessage, setSaveMessage] = useState("");
   const result = useMemo(() => buildRecommendation(profile), [profile]);
   const selectedDay = result.selectedDay;
   const metricByLabel = new Map(result.selectedRecovery.metrics.map((metric) => [metric.label, metric]));
@@ -353,9 +377,44 @@ function App() {
     setProfile((current) => ({ ...current, [field]: value }));
   };
 
+  useEffect(() => {
+    setSavedPlans(readSavedPlans());
+  }, []);
+
+  const persistSavedPlans = (plans: SavedPlan[]) => {
+    setSavedPlans(plans);
+    writeSavedPlans(plans);
+  };
+
   const resetProfile = () => {
     setProfile(getDefaultProfile());
     setAllergyText("");
+    setSaveMessage("");
+  };
+
+  const saveCurrentPlan = () => {
+    const planName = `第${profile.postpartumDay}天-${deliveryLabels[profile.deliveryMode]}-${feedingLabels[profile.feedingMode]}`;
+    const nextPlan: SavedPlan = {
+      id: `${Date.now()}`,
+      name: planName,
+      createdAt: new Date().toLocaleString("zh-CN"),
+      profile,
+    };
+    const nextPlans = [nextPlan, ...savedPlans.filter((plan) => plan.name !== planName)].slice(0, 6);
+    persistSavedPlans(nextPlans);
+    setSaveMessage("已保存当前方案设置，可在首页一键恢复。");
+  };
+
+  const loadSavedPlan = (plan: SavedPlan) => {
+    setProfile(plan.profile);
+    setAllergyText(plan.profile.allergies.join("、"));
+    setSaveMessage(`已恢复：${plan.name}`);
+    setPage("plan");
+  };
+
+  const deleteSavedPlan = (planId: string) => {
+    persistSavedPlans(savedPlans.filter((plan) => plan.id !== planId));
+    setSaveMessage("已删除保存方案。");
   };
 
   if (page === "setup") {
@@ -365,9 +424,9 @@ function App() {
           <div className="heroInner">
             <div>
               <p className="eyebrow">月子餐个性化推荐</p>
-              <h1>先填写妈妈情况，再生成42天月子餐与康复计划</h1>
+              <h1>专业规则推荐，让42天月子餐更清淡、更稳、更好执行</h1>
               <p className="heroCopy">
-                系统会根据产后天数、顺产/剖宫产、哺乳状态、过敏忌口和常见病史做规则推荐。默认从第1天开始，可按真实产后天数调整。
+                系统会根据产后天数、顺产/剖宫产、哺乳状态、过敏忌口和常见病史做规则推荐。新增血糖管理餐、崔玉涛健康教育风格清淡餐和本地保存方案。
               </p>
             </div>
             <div className="heroShowcase">
@@ -375,9 +434,26 @@ function App() {
               <div className="heroStats" aria-label="营养原则摘要">
                 <strong>填写完成后进入方案页</strong>
                 <span>三餐、加餐、汤饮、水果、康复动作一次生成</span>
-                <span>全程本地计算，不上传健康信息</span>
+                <span>可保存当前设置，下次用同一浏览器快速恢复</span>
               </div>
             </div>
+          </div>
+          <div className="heroProofGrid" aria-label="推荐系统特点">
+            <article>
+              <span>01</span>
+              <strong>病种适配</strong>
+              <p>妊娠糖尿病、高血压、贫血、便秘、堵奶风险按规则调整主食、汤饮、甜品和调味。</p>
+            </article>
+            <article>
+              <span>02</span>
+              <strong>清淡不过补</strong>
+              <p>参考崔玉涛健康教育风格：不过度进补，不油腻催奶，不把单一食物神化。</p>
+            </article>
+            <article>
+              <span>03</span>
+              <strong>本地保存</strong>
+              <p>方案只保存在用户自己的浏览器里，便于家属反复查看，不需要登录。</p>
+            </article>
           </div>
           <div className="visualStrip" aria-label="网站能力">
             <div>
@@ -407,6 +483,38 @@ function App() {
             onReset={resetProfile}
             onSubmit={() => setPage("plan")}
           />
+          <section className="panel savedPlanPanel" aria-label="已保存方案">
+            <div className="panelHeader">
+              <div>
+                <p className="eyebrow">本地保存</p>
+                <h2>已保存方案</h2>
+              </div>
+              <span>{savedPlans.length}/6</span>
+            </div>
+            {saveMessage && <p className="saveMessage">{saveMessage}</p>}
+            {savedPlans.length > 0 ? (
+              <div className="savedPlanList">
+                {savedPlans.map((plan) => (
+                  <article key={plan.id} className="savedPlanItem">
+                    <div>
+                      <strong>{plan.name}</strong>
+                      <p>{plan.createdAt}</p>
+                    </div>
+                    <div>
+                      <button className="ghostButton" type="button" onClick={() => loadSavedPlan(plan)}>
+                        恢复
+                      </button>
+                      <button className="textButton" type="button" onClick={() => deleteSavedPlan(plan.id)}>
+                        删除
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="muted">还没有保存的方案。生成方案后点击“保存方案”，下次打开可直接恢复。</p>
+            )}
+          </section>
         </section>
       </main>
     );
@@ -429,6 +537,9 @@ function App() {
             <span>{deliveryLabels[profile.deliveryMode]}</span>
             <span>{feedingLabels[profile.feedingMode]}</span>
             <span>{activityLabels[profile.activityLevel]}</span>
+            <button className="saveButton" type="button" onClick={saveCurrentPlan}>
+              保存方案
+            </button>
             <button className="ghostButton" type="button" onClick={() => setPage("setup")}>
               修改诉求
             </button>
@@ -462,6 +573,19 @@ function App() {
               {warning}
             </p>
           ))}
+        </section>
+        {saveMessage && <p className="saveMessage inlineSaveMessage">{saveMessage}</p>}
+
+        <section className="panel conditionGuidePanel">
+          <div>
+            <p className="eyebrow">病种与原则适配</p>
+            <h2>当前方案的重点规则</h2>
+          </div>
+          <div className="conditionGuideGrid">
+            {result.conditionGuides.map((guide) => (
+              <p key={guide}>{guide}</p>
+            ))}
+          </div>
         </section>
 
         <section className="sectionHeader">

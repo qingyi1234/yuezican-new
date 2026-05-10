@@ -103,6 +103,7 @@ export interface RecommendationResult {
   selectedRecovery: RecoveryPlanDay;
   replacedOrAvoided: string[];
   riskWarnings: string[];
+  conditionGuides: string[];
   nutritionPrinciples: string[];
   recoverySummary: string[];
 }

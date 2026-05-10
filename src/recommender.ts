@@ -82,7 +82,13 @@ const scoreRecipe = (recipe: Recipe, profile: UserProfile) => {
   let score = recipe.preferTags.filter((tag) => activePrefs.includes(tag)).length * 3;
 
   if (profile.feedingMode !== "notBreastfeeding" && recipe.nutritionTags.includes("泌乳支持")) score += 2;
-  if (profile.medicalHistory.includes("gestationalDiabetes") && recipe.nutritionTags.includes("控糖友好")) score += 3;
+  if (profile.medicalHistory.includes("gestationalDiabetes") && recipe.nutritionTags.includes("控糖友好")) score += 8;
+  if (profile.medicalHistory.includes("gestationalDiabetes") && recipe.nutritionTags.includes("甜品")) score -= 4;
+  if (profile.medicalHistory.includes("hypertension") && recipe.nutritionTags.includes("清淡")) score += 3;
+  if (profile.medicalHistory.includes("anemia") && recipe.nutritionTags.some((tag) => tag.includes("铁"))) score += 4;
+  if (profile.medicalHistory.includes("constipation") && recipe.nutritionTags.includes("膳食纤维")) score += 4;
+  if (profile.medicalHistory.includes("pluggedDuctRisk") && recipe.nutritionTags.includes("低脂")) score += 4;
+  if (recipe.nutritionTags.includes("崔玉涛理念")) score += 2;
   if (profile.goals.includes("weightControl") && recipe.nutritionTags.includes("控重")) score += 2;
   if (profile.goals.includes("lightTaste") && recipe.nutritionTags.includes("清淡")) score += 2;
   return score;
@@ -122,6 +128,10 @@ const pickRecipe = (
 
 const getFruit = (day: number, profile: UserProfile) => {
   let fruit = fruitPool[(day - 1) % fruitPool.length];
+  if (profile.medicalHistory.includes("gestationalDiabetes")) {
+    const lowSugarFruit = ["苹果100g，随加餐吃，不榨汁。", "蓝莓60g配无糖酸奶或无糖豆乳。", "猕猴桃半个到1个，放在白天加餐。"];
+    return lowSugarFruit[(day - 1) % lowSugarFruit.length];
+  }
   if (profile.medicalHistory.includes("gestationalDiabetes")) {
     fruit = fruit.replace("香蕉半根到1根", "香蕉半根").replace("150g", "100g");
   }
@@ -301,6 +311,37 @@ const getRiskWarnings = (profile: UserProfile) => {
   return warnings;
 };
 
+const getConditionGuides = (profile: UserProfile) => {
+  const guides: string[] = [];
+
+  if (profile.medicalHistory.includes("gestationalDiabetes")) {
+    guides.push("血糖管理餐：优先全谷杂豆、低GI主食、足量蔬菜和优质蛋白；甜品只保留无加糖、小份量版本，水果放在加餐并避免果汁。");
+    guides.push("每餐主食不取消，但会控制精制米面和南瓜、土豆、红薯等淀粉食材叠加；若医生给了碳水克数，以医嘱为准。");
+  }
+  if (profile.medicalHistory.includes("hypertension")) {
+    guides.push("高血压/水肿餐：汤水撇油少盐，避免腌菜、火腿、浓汤、重口酱料；每天观察头痛、眼花、明显水肿等信号。");
+  }
+  if (profile.medicalHistory.includes("anemia")) {
+    guides.push("贫血餐：瘦红肉、禽肉、鱼、蛋、深绿叶菜轮换，搭配橙子、猕猴桃等维生素C来源帮助铁吸收。");
+  }
+  if (profile.medicalHistory.includes("constipation")) {
+    guides.push("便秘餐：熟蔬菜、全谷杂豆、适量水果和饮水同时增加，避免只喝汤不吃菜或长期细软精米面。");
+  }
+  if (profile.medicalHistory.includes("pluggedDuctRisk")) {
+    guides.push("堵奶风险：不使用油腻浓汤猛催奶，重点放在规律排乳、补水、低脂优质蛋白和休息。");
+  }
+  if (profile.medicalHistory.includes("lactoseIntolerance")) {
+    guides.push("乳糖不耐：奶类优先换成无乳糖奶、无糖酸奶或强化钙豆制品，出现腹胀腹泻时减少单次摄入量。");
+  }
+
+  if (guides.length === 0) {
+    guides.push("当前按普通产后42天恢复餐执行：不过度进补，不油腻催奶，三餐两加餐保持食物多样。");
+  }
+
+  guides.push("崔玉涛健康教育风格参考：强调均衡、清淡、循证和家庭可执行，不照搬任何课程或书籍原文食谱。");
+  return guides.slice(0, 6);
+};
+
 export const buildRecommendation = (profile: UserProfile): RecommendationResult => {
   const built = Array.from({ length: 42 }, (_, index) => buildMealDay(index + 1, profile));
   const selectedDayNumber = Math.min(Math.max(profile.postpartumDay, 1), 42);
@@ -313,6 +354,7 @@ export const buildRecommendation = (profile: UserProfile): RecommendationResult 
     selectedRecovery: buildRecoveryPlan(selectedDayNumber, profile),
     replacedOrAvoided,
     riskWarnings: getRiskWarnings(profile),
+    conditionGuides: getConditionGuides(profile),
     nutritionPrinciples,
     recoverySummary: [
       "产后42天内以循序渐进为原则，动作后不应出现疼痛、出血增加或明显疲劳。",

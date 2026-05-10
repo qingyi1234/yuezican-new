@@ -109,6 +109,44 @@ h4 {
   line-height: 1.7;
 }
 
+.heroProofGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 28px 14px;
+}
+
+.heroProofGrid article {
+  min-height: 132px;
+  padding: 16px;
+  border: 1px solid rgba(31, 42, 42, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 253, 250, 0.78);
+}
+
+.heroProofGrid span {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--coral);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.heroProofGrid strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.heroProofGrid p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .heroShowcase {
   display: grid;
   gap: 14px;
@@ -491,9 +529,13 @@ h4 {
 }
 
 .setupWorkspace {
-  max-width: 760px;
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(280px, 420px);
+  gap: 16px;
+  max-width: 1220px;
   margin: 0 auto;
   padding: 24px 28px 44px;
+  align-items: start;
 }
 
 .setupForm {
@@ -652,6 +694,87 @@ h4 {
   color: var(--green-dark);
 }
 
+.saveButton {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(47, 125, 98, 0.28);
+  border-radius: 6px;
+  background: var(--green);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.textButton {
+  min-height: 34px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--coral);
+  font-weight: 800;
+}
+
+.savedPlanPanel {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  position: sticky;
+  top: 16px;
+}
+
+.savedPlanPanel .panelHeader > span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.savedPlanList {
+  display: grid;
+  gap: 10px;
+}
+
+.savedPlanItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.savedPlanItem strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.savedPlanItem p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.savedPlanItem > div:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.saveMessage {
+  margin-bottom: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(47, 125, 98, 0.2);
+  border-radius: 8px;
+  background: rgba(47, 125, 98, 0.08);
+  color: var(--green-dark);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.inlineSaveMessage {
+  width: fit-content;
+}
+
 .field,
 .fieldGroup {
   display: grid;
@@ -789,6 +912,34 @@ input[type="text"] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.conditionGuidePanel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px;
+  align-items: start;
+}
+
+.conditionGuidePanel h2,
+.conditionGuidePanel p {
+  margin-bottom: 0;
+}
+
+.conditionGuideGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.conditionGuideGrid p {
+  padding: 12px;
+  border: 1px solid rgba(55, 107, 141, 0.14);
+  border-radius: 8px;
+  background: rgba(55, 107, 141, 0.06);
+  color: var(--ink-soft);
+  line-height: 1.6;
 }
 
 .warning {
@@ -1215,7 +1366,9 @@ ul {
   .workspace,
   .heroInner,
   .planTopInner,
-  .dayPanel {
+  .dayPanel,
+  .setupWorkspace,
+  .conditionGuidePanel {
     grid-template-columns: 1fr;
   }
 
@@ -1231,12 +1384,17 @@ ul {
     position: static;
     max-height: none;
   }
+
+  .savedPlanPanel {
+    position: static;
+  }
 }
 
 @media (max-width: 760px) {
   .heroInner,
   .workspace,
-  .visualStrip {
+  .visualStrip,
+  .heroProofGrid {
     padding-left: 14px;
     padding-right: 14px;
   }
@@ -1249,9 +1407,15 @@ ul {
   .compactActionGrid,
   .recoveryDashboard,
   .principleGrid,
+  .conditionGuideGrid,
+  .heroProofGrid,
   .noticeGrid,
   .recipeGrid,
   .visualStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .savedPlanItem {
     grid-template-columns: 1fr;
   }
 
