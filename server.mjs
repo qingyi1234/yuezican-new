@@ -1,9 +1,11 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
+import { networkInterfaces } from "node:os";
 import { extname, join, normalize } from "node:path";
 
 const root = join(process.cwd(), "dist");
 const port = Number(process.env.PORT || 5173);
+const host = "0.0.0.0";
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -18,7 +20,7 @@ const mimeTypes = {
 };
 
 createServer((request, response) => {
-  const urlPath = decodeURIComponent(new URL(request.url || "/", `http://127.0.0.1:${port}`).pathname);
+  const urlPath = decodeURIComponent(new URL(request.url || "/", `http://localhost:${port}`).pathname);
   const safePath = normalize(urlPath).replace(/^(\.\.[/\\])+/, "");
   let filePath = join(root, safePath);
 
@@ -31,6 +33,11 @@ createServer((request, response) => {
     "Cache-Control": "no-store",
   });
   createReadStream(filePath).pipe(response);
-}).listen(port, "127.0.0.1", () => {
-  console.log(`月子餐网站已启动: http://127.0.0.1:${port}/`);
+}).listen(port, host, () => {
+  const addresses = Object.values(networkInterfaces())
+    .flat()
+    .filter((item) => item && item.family === "IPv4" && !item.internal)
+    .map((item) => item.address);
+  console.log(`月子餐网站已启动: http://localhost:${port}/`);
+  addresses.forEach((address) => console.log(`同一Wi-Fi手机可尝试: http://${address}:${port}/`));
 });

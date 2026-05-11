@@ -1,6 +1,13 @@
 export type DeliveryMode = "vaginal" | "cesarean";
 export type FeedingMode = "breastfeeding" | "mixed" | "notBreastfeeding";
 export type ActivityLevel = "bedRest" | "light" | "normal";
+export type NutritionScenario =
+  | "pregnancy"
+  | "postpartum"
+  | "lactation"
+  | "hospitalDelivery"
+  | "postSurgery"
+  | "senior";
 
 export type MedicalHistory =
   | "gestationalDiabetes"
@@ -31,6 +38,7 @@ export type DietRestriction =
   | "noPeanut";
 
 export interface UserProfile {
+  scenario: NutritionScenario;
   postpartumDay: number;
   deliveryMode: DeliveryMode;
   feedingMode: FeedingMode;
@@ -55,7 +63,7 @@ export interface Recipe {
   steps: string[];
   nutritionTags: string[];
   avoidTags: Array<DietRestriction | MedicalHistory | Goal | DeliveryMode>;
-  preferTags: Array<MedicalHistory | Goal | FeedingMode | DeliveryMode | DietRestriction>;
+  preferTags: Array<MedicalHistory | Goal | FeedingMode | DeliveryMode | DietRestriction | NutritionScenario>;
   replacements: string[];
   safetyNote: string;
 }

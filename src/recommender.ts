@@ -11,6 +11,7 @@ import type {
   Goal,
   MealPlanDay,
   MedicalHistory,
+  NutritionScenario,
   Recipe,
   RecommendationResult,
   RecoveryPlanDay,
@@ -39,6 +40,15 @@ const goalNotes: Record<Goal, string> = {
   lightTaste: "清淡：盐、酱油和油定量，避免重辣、腌制和高钠汤底。",
   constipationRelief: "便秘改善：熟蔬菜、全谷杂豆、水果和饮水同时增加。",
   woundHealing: "伤口恢复：优先蛋白质、维生素C和铁锌来源，剖宫产避免牵拉动作。",
+};
+
+const scenarioFocus: Record<NutritionScenario, string> = {
+  pregnancy: "孕期按产检风险、孕周阶段和体重增长目标调整，强调铁、钙、叶酸、优质蛋白和食品安全。",
+  postpartum: "月子餐以42天阶段恢复为主，兼顾泌乳、控重、伤口和胃肠耐受。",
+  lactation: "泌乳期强调足量能量、补液、优质蛋白、奶豆类和规律哺乳。",
+  hospitalDelivery: "医院分娩餐以清淡、软烂、易消化和医嘱允许的饮食质地为先。",
+  postSurgery: "术后养护重视蛋白质、维生素C、锌和少量多餐，避免刺激性和高油食物。",
+  senior: "中老年营养餐以低盐低脂、软烂易消化、控糖友好和钙蛋白补充为重点。",
 };
 
 const recipeText = (recipe: Recipe) =>
@@ -78,10 +88,17 @@ const scoreRecipe = (recipe: Recipe, profile: UserProfile) => {
     ...profile.restrictions,
     profile.deliveryMode,
     profile.feedingMode,
+    profile.scenario,
   ];
   let score = recipe.preferTags.filter((tag) => activePrefs.includes(tag)).length * 3;
 
   if (profile.feedingMode !== "notBreastfeeding" && recipe.nutritionTags.includes("泌乳支持")) score += 2;
+  if (profile.scenario === "pregnancy" && recipe.nutritionTags.includes("孕期友好")) score += 8;
+  if (profile.scenario === "lactation" && recipe.nutritionTags.includes("泌乳期友好")) score += 8;
+  if (profile.scenario === "hospitalDelivery" && recipe.nutritionTags.includes("医院分娩餐")) score += 8;
+  if (profile.scenario === "postSurgery" && recipe.nutritionTags.includes("术后养护")) score += 8;
+  if (profile.scenario === "senior" && recipe.nutritionTags.includes("中老年友好")) score += 8;
+  if ((profile.scenario === "hospitalDelivery" || profile.scenario === "postSurgery") && recipe.nutritionTags.includes("易消化")) score += 4;
   if (profile.medicalHistory.includes("gestationalDiabetes") && recipe.nutritionTags.includes("控糖友好")) score += 8;
   if (profile.medicalHistory.includes("gestationalDiabetes") && recipe.nutritionTags.includes("甜品")) score -= 4;
   if (profile.medicalHistory.includes("hypertension") && recipe.nutritionTags.includes("清淡")) score += 3;
@@ -89,6 +106,8 @@ const scoreRecipe = (recipe: Recipe, profile: UserProfile) => {
   if (profile.medicalHistory.includes("constipation") && recipe.nutritionTags.includes("膳食纤维")) score += 4;
   if (profile.medicalHistory.includes("pluggedDuctRisk") && recipe.nutritionTags.includes("低脂")) score += 4;
   if (recipe.nutritionTags.includes("崔玉涛理念")) score += 2;
+  if (recipe.mealType === "breakfast" && recipe.nutritionTags.includes("早餐优化")) score += 4;
+  if (recipe.mealType === "snack" && recipe.nutritionTags.includes("加餐优化")) score += 4;
   if (profile.goals.includes("weightControl") && recipe.nutritionTags.includes("控重")) score += 2;
   if (profile.goals.includes("lightTaste") && recipe.nutritionTags.includes("清淡")) score += 2;
   return score;
@@ -128,15 +147,53 @@ const pickRecipe = (
 
 const getFruit = (day: number, profile: UserProfile) => {
   let fruit = fruitPool[(day - 1) % fruitPool.length];
+  if (profile.scenario === "pregnancy") {
+    const pregnancyFruit = [
+      "橙子150g，常温食用，搭配含铁餐。",
+      "草莓120g，洗净后尽快食用，不加糖。",
+      "苹果150g，常温或蒸温食用。",
+    ];
+    return pregnancyFruit[(day - 1) % pregnancyFruit.length];
+  }
+  if (profile.scenario === "senior") {
+    const seniorFruit = [
+      "苹果100g，切小块或蒸温，咀嚼困难者做软烂处理。",
+      "猕猴桃半个到1个，便秘者可选。",
+      "梨100g，蒸温后食用，不加冰糖。",
+    ];
+    return seniorFruit[(day - 1) % seniorFruit.length];
+  }
+  if (profile.scenario === "hospitalDelivery" || profile.scenario === "postSurgery") {
+    return "苹果100g或梨100g，蒸温小份量吃，腹胀、禁食或医嘱限制时暂缓。";
+  }
   if (profile.medicalHistory.includes("gestationalDiabetes")) {
-    const lowSugarFruit = ["苹果100g，随加餐吃，不榨汁。", "蓝莓60g配无糖酸奶或无糖豆乳。", "猕猴桃半个到1个，放在白天加餐。"];
+    const lowSugarFruit = [
+      "苹果100g，随加餐吃，不榨汁。",
+      "蓝莓60g配无糖酸奶或无糖豆乳。",
+      "猕猴桃半个到1个，放在白天加餐。",
+      "草莓100g，清洗后常温食用，不加糖。",
+      "柚子80-100g，随正餐吃，服药者先问医生。",
+    ];
     return lowSugarFruit[(day - 1) % lowSugarFruit.length];
   }
-  if (profile.medicalHistory.includes("gestationalDiabetes")) {
-    fruit = fruit.replace("香蕉半根到1根", "香蕉半根").replace("150g", "100g");
+  if (profile.medicalHistory.includes("anemia") || profile.goals.includes("iron")) {
+    const ironFruit = [
+      "橙子150g，常温食用，帮助铁吸收。",
+      "猕猴桃1个，放在午后加餐。",
+      "草莓120g，清洗后常温食用。",
+    ];
+    return ironFruit[(day - 1) % ironFruit.length];
   }
   if (profile.goals.includes("constipationRelief") || profile.medicalHistory.includes("constipation")) {
-    return day % 2 === 0 ? "猕猴桃1个，常温食用，便秘者优先" : "火龙果150g，腹泻者避开";
+    const constipationFruit = [
+      "猕猴桃1个，常温食用，便秘者优先。",
+      "火龙果150g，腹泻者避开。",
+      "苹果梨混合120g，蒸温后食用，不加糖。",
+    ];
+    return constipationFruit[(day - 1) % constipationFruit.length];
+  }
+  if (profile.deliveryMode === "cesarean" && day <= 7) {
+    return "苹果100-150g，蒸温后小份量吃，腹胀明显时暂缓。";
   }
   return fruit;
 };
@@ -144,6 +201,7 @@ const getFruit = (day: number, profile: UserProfile) => {
 const getNutritionFocus = (day: number, profile: UserProfile) => {
   const focus = [
     getPhase(day),
+    `服务类型：${scenarioFocus[profile.scenario]}`,
     profile.feedingMode === "notBreastfeeding"
       ? "不哺乳版本适当减少汤饮和加餐能量，保持蛋白和蔬菜。"
       : "哺乳版本保留两次加餐和低脂汤水，帮助补液与维持泌乳。",
@@ -292,6 +350,15 @@ const getRiskWarnings = (profile: UserProfile) => {
     "本结果是营养教育和家庭执行参考，不能替代医生、注册营养师或产后康复治疗师。",
   ];
 
+  if (profile.scenario === "pregnancy") {
+    warnings.push("孕期如有妊娠糖尿病、高血压、贫血、胎儿生长受限等情况，需以产检医生和营养师建议为准。");
+  }
+  if (profile.scenario === "hospitalDelivery" || profile.scenario === "postSurgery") {
+    warnings.push("医院分娩和术后阶段需遵医嘱决定禁食、流质、半流质或普通饮食，本工具不替代病房膳食医嘱。");
+  }
+  if (profile.scenario === "senior") {
+    warnings.push("中老年人如有肾病、吞咽障碍、糖尿病、高血压或用药限制，需按医生和营养师建议调整蛋白、钠和钾摄入。");
+  }
   if (profile.deliveryMode === "cesarean") {
     warnings.push("剖宫产早期避免卷腹、平板支撑、跳跃、大重量训练和明显牵拉伤口的动作。");
   }
@@ -313,6 +380,22 @@ const getRiskWarnings = (profile: UserProfile) => {
 
 const getConditionGuides = (profile: UserProfile) => {
   const guides: string[] = [];
+
+  if (profile.scenario === "pregnancy") {
+    guides.push("孕期营养餐：按阶段强调叶酸、铁、钙、优质蛋白和低汞鱼类；避免生食、酒精、未消毒奶制品和高汞鱼。");
+  }
+  if (profile.scenario === "lactation") {
+    guides.push("泌乳期营养餐：以足量能量、优质蛋白、奶豆类、补液和规律哺乳为核心，不依赖油腻浓汤催乳。");
+  }
+  if (profile.scenario === "hospitalDelivery") {
+    guides.push("医院分娩餐：优先软烂、清淡、易消化，按医生允许的饮食质地执行，避免自行进补和刺激性食物。");
+  }
+  if (profile.scenario === "postSurgery") {
+    guides.push("术后养护营养餐：优先优质蛋白、维生素C、锌和足量能量，少量多餐，进食时间和质地遵医嘱。");
+  }
+  if (profile.scenario === "senior") {
+    guides.push("中老年营养餐：低盐低脂、软烂易消化，重视优质蛋白、钙、膳食纤维和慢病用药限制。");
+  }
 
   if (profile.medicalHistory.includes("gestationalDiabetes")) {
     guides.push("血糖管理餐：优先全谷杂豆、低GI主食、足量蔬菜和优质蛋白；甜品只保留无加糖、小份量版本，水果放在加餐并避免果汁。");
@@ -365,6 +448,7 @@ export const buildRecommendation = (profile: UserProfile): RecommendationResult 
 };
 
 export const getDefaultProfile = (): UserProfile => ({
+  scenario: "postpartum",
   postpartumDay: 1,
   deliveryMode: "vaginal",
   feedingMode: "breastfeeding",
