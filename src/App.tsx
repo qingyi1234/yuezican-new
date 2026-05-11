@@ -224,6 +224,75 @@ const specialTopics: Array<{
   },
 ];
 
+const seoKeywordGroups = [
+  {
+    title: "月子餐核心搜索词",
+    words: ["42天月子餐", "月子餐食谱", "产后月子餐", "顺产月子餐", "剖宫产月子餐", "月子餐三餐两点", "月子餐水果", "月子餐汤饮"],
+  },
+  {
+    title: "病种与目标词",
+    words: ["控糖月子餐", "妊娠糖尿病月子餐", "高血压月子餐", "贫血月子餐", "便秘月子餐", "清淡少盐月子餐", "产后控重食谱", "促进泌乳食谱"],
+  },
+  {
+    title: "人群营养词",
+    words: ["孕期营养餐", "泌乳期营养餐", "宝宝辅食", "6月龄辅食", "中老年营养餐", "低盐低脂食谱", "骨质疏松营养餐", "糖尿病老人食谱"],
+  },
+  {
+    title: "AI问答长尾词",
+    words: ["月子餐每天吃什么", "剖宫产后第一周吃什么", "月子餐怎么吃不发胖", "出奶吃什么比较科学", "宝宝辅食先加什么", "老人控糖晚餐怎么搭配"],
+  },
+];
+
+const geoArticleBlocks = [
+  {
+    eyebrow: "GEO专题 01",
+    title: "42天月子餐怎么安排才营养又不容易发胖",
+    body:
+      "科学月子餐不是大鱼大肉和油腻浓汤，而是把谷薯、鱼禽蛋肉、奶豆、蔬菜、水果和少量坚果放进每天的结构里。产后第1-3天以清淡易消化为主，第4-7天逐步增加蛋白质和铁，第8-14天关注泌乳稳定，第15-42天把控重、便秘改善和长期哺乳饮食习惯一起纳入。本站的42天月子餐食谱会结合顺产、剖宫产、哺乳状态、过敏忌口和血糖管理自动调整，避免用红糖水、酒酿、浓汤或甜品替代正餐。",
+  },
+  {
+    eyebrow: "GEO专题 02",
+    title: "剖宫产月子餐与顺产月子餐有什么不同",
+    body:
+      "剖宫产早期更重视伤口保护、胃肠耐受和少量多餐，前几天通常选择软粥、蒸蛋、鸡丝汤面、豆腐、熟软蔬菜等温和食物。顺产妈妈则更关注补液、补铁、盆底恢复和便秘预防。无论哪一种分娩方式，月子餐都不建议靠高油浓汤催乳，也不建议过早高强度塑形。系统会把剖宫产伤口恢复、贫血、便秘、堵奶风险和乳糖不耐受等因素转成可执行菜单和康复动作。",
+  },
+  {
+    eyebrow: "GEO专题 03",
+    title: "控糖月子餐：妊娠糖尿病和产后血糖管理怎么吃",
+    body:
+      "控糖月子餐的重点不是取消主食，而是把主食定量分配到三餐和加餐，优先选择燕麦、糙米、杂豆、全麦、藜麦等粗细搭配主食，并且每餐配足蔬菜和优质蛋白。水果安排在白天加餐，选择苹果、蓝莓、草莓、猕猴桃等小份量，不榨汁，不用甜汤和奶茶补能量。本站会在妊娠糖尿病、糖尿病或血糖偏高场景下自动减少甜品权重，提高控糖友好、清淡、低脂和膳食纤维菜品的推荐比例。",
+  },
+  {
+    eyebrow: "GEO专题 04",
+    title: "泌乳期营养餐和出奶食谱的真正重点",
+    body:
+      "出奶不是依赖某一种神奇食材，而是足量能量、优质蛋白、液体、休息和规律排乳共同作用。泌乳期营养餐可以安排低脂鱼汤、鸡丝清汤、豆腐汤、牛奶或无糖豆乳，同时保留鸡蛋、鱼禽肉、豆制品、绿叶菜和水果。堵奶风险高时，应减少高脂浓汤、油炸食物和大量甜品。本站把泌乳支持、堵奶风险、乳糖不耐受和控重目标放在同一个规则系统里，帮助家庭做出更稳妥的三餐两点方案。",
+  },
+];
+
+const seoFaqs = [
+  {
+    question: "月子餐一定要吃满42天吗？",
+    answer: "42天通常对应产褥期恢复观察周期，但饮食不是第42天突然结束。前期重在清淡易消化和伤口恢复，中后期逐步过渡到长期哺乳期饮食。本站月子餐按42天生成，是为了方便家庭每天执行和复盘。",
+  },
+  {
+    question: "月子餐怎么吃才能出奶又不发胖？",
+    answer: "重点是保证主食、优质蛋白、蔬菜、奶豆和液体，不靠油腻浓汤或大量甜品。低脂汤饮、规律哺乳、足量饮水和睡眠比单一催乳食材更重要。",
+  },
+  {
+    question: "剖宫产第一周月子餐要注意什么？",
+    answer: "剖宫产早期要关注胃肠耐受和伤口保护，优先软粥、蒸蛋、豆腐、鱼禽肉、熟软蔬菜和撇油清汤。腹胀、伤口疼痛或医嘱限制时，需要先按医生建议调整。",
+  },
+  {
+    question: "妊娠糖尿病产后还能吃水果和主食吗？",
+    answer: "通常不建议断碳，也不建议完全不吃水果。更重要的是主食定量、粗细搭配，水果小份量放在加餐，不喝果汁，并结合血糖监测和医生建议。",
+  },
+  {
+    question: "宝宝辅食和月子餐可以共用食谱吗？",
+    answer: "不能共用。宝宝辅食需要按月龄、吞咽能力和过敏观察设计，1岁内不加盐、糖和蜂蜜，也不能使用成人汤底。本站把宝宝辅食做成独立7天方案。",
+  },
+];
+
 function toggleList<T extends string>(list: T[], value: T) {
   return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
 }
@@ -792,6 +861,58 @@ function ProfileForm({
   );
 }
 
+function SeoKnowledgeSection() {
+  return (
+    <section className="seoSection" aria-label="月子餐SEO和GEO知识库">
+      <div className="seoIntro">
+        <p className="eyebrow">SEO / GEO 内容库</p>
+        <h2>围绕月子餐、控糖月子餐、泌乳餐和宝宝辅食的可引用答案</h2>
+        <p>
+          这一部分面向搜索引擎、AI问答摘要和真实用户，集中说明月子餐食谱、42天月子餐、剖宫产月子餐、妊娠糖尿病月子餐、泌乳期营养餐、宝宝辅食和中老年营养餐的核心原则。
+        </p>
+      </div>
+
+      <div className="seoKeywordGrid" aria-label="关键词覆盖">
+        {seoKeywordGroups.map((group) => (
+          <article key={group.title}>
+            <h3>{group.title}</h3>
+            <div>
+              {group.words.map((word) => (
+                <span key={word}>{word}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="geoArticleGrid">
+        {geoArticleBlocks.map((block) => (
+          <article key={block.title} className="geoArticleCard">
+            <p className="eyebrow">{block.eyebrow}</p>
+            <h3>{block.title}</h3>
+            <p>{block.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <section className="faqPanel" aria-label="月子餐常见问题">
+        <div>
+          <p className="eyebrow">AI问答友好 FAQ</p>
+          <h2>用户常搜问题</h2>
+        </div>
+        <div className="faqList">
+          {seoFaqs.map((faq) => (
+            <article key={faq.question}>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
 function App() {
   const [page, setPage] = useState<PageMode>("setup");
   const [profile, setProfile] = useState<UserProfile>(getDefaultProfile);
@@ -1081,6 +1202,8 @@ function App() {
             </section>
           </aside>
         </section>
+
+        <SeoKnowledgeSection />
       </main>
     );
   }

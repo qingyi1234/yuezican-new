@@ -1534,6 +1534,122 @@ ul {
   font-weight: 700;
 }
 
+.seoSection {
+  width: min(1180px, calc(100% - 32px));
+  margin: 26px auto 42px;
+  display: grid;
+  gap: 16px;
+}
+
+.seoIntro,
+.faqPanel,
+.geoArticleCard,
+.seoKeywordGrid article {
+  background: rgba(255, 253, 250, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.seoIntro {
+  padding: 22px;
+}
+
+.seoIntro h2,
+.faqPanel h2 {
+  margin: 3px 0 8px;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  letter-spacing: 0;
+}
+
+.seoIntro p {
+  max-width: 920px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.seoKeywordGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.seoKeywordGrid article {
+  padding: 16px;
+}
+
+.seoKeywordGrid h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.seoKeywordGrid article div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.seoKeywordGrid span {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e8f4ee;
+  color: var(--green);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.geoArticleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.geoArticleCard {
+  padding: 18px;
+}
+
+.geoArticleCard h3 {
+  margin: 5px 0 9px;
+  font-size: 1.12rem;
+}
+
+.geoArticleCard p:last-child {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.85;
+}
+
+.faqPanel {
+  padding: 20px;
+}
+
+.faqList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.faqList article {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px;
+}
+
+.faqList h3 {
+  margin: 0 0 8px;
+  font-size: 0.98rem;
+}
+
+.faqList p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
 .printPlan {
   display: none;
 }
@@ -1764,6 +1880,11 @@ ul {
   .libraryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .seoKeywordGrid,
+  .faqList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -1831,6 +1952,24 @@ ul {
 
   .heroVisual {
     display: none;
+  }
+
+  .seoSection {
+    width: calc(100% - 24px);
+    margin-top: 18px;
+  }
+
+  .seoKeywordGrid,
+  .geoArticleGrid,
+  .faqList {
+    grid-template-columns: 1fr;
+  }
+
+  .seoIntro,
+  .faqPanel,
+  .geoArticleCard,
+  .seoKeywordGrid article {
+    padding: 14px;
   }
 
   .heroStats {
