@@ -1,10 +1,22 @@
 export type DeliveryMode = "vaginal" | "cesarean";
 export type FeedingMode = "breastfeeding" | "mixed" | "notBreastfeeding";
 export type ActivityLevel = "bedRest" | "light" | "normal";
+export type NutritionScenario =
+  | "pregnancy"
+  | "postpartum"
+  | "lactation"
+  | "senior"
+  | "babyFood";
 
 export type MedicalHistory =
   | "gestationalDiabetes"
+  | "diabetes"
   | "hypertension"
+  | "hyperlipidemia"
+  | "goutHighUricAcid"
+  | "kidneyDisease"
+  | "osteoporosis"
+  | "dysphagia"
   | "anemia"
   | "constipation"
   | "thyroid"
@@ -18,7 +30,13 @@ export type Goal =
   | "calcium"
   | "lightTaste"
   | "constipationRelief"
-  | "woundHealing";
+  | "woundHealing"
+  | "bloodSugarStable"
+  | "lowSaltLowFat"
+  | "proteinMuscle"
+  | "boneHealth"
+  | "softEasyDigest"
+  | "bowelRegular";
 
 export type DietRestriction =
   | "noPork"
@@ -31,6 +49,7 @@ export type DietRestriction =
   | "noPeanut";
 
 export interface UserProfile {
+  scenario: NutritionScenario;
   postpartumDay: number;
   deliveryMode: DeliveryMode;
   feedingMode: FeedingMode;
@@ -55,7 +74,7 @@ export interface Recipe {
   steps: string[];
   nutritionTags: string[];
   avoidTags: Array<DietRestriction | MedicalHistory | Goal | DeliveryMode>;
-  preferTags: Array<MedicalHistory | Goal | FeedingMode | DeliveryMode | DietRestriction>;
+  preferTags: Array<MedicalHistory | Goal | FeedingMode | DeliveryMode | DietRestriction | NutritionScenario>;
   replacements: string[];
   safetyNote: string;
 }
@@ -98,6 +117,8 @@ export interface RecoveryPlanDay {
 }
 
 export interface RecommendationResult {
+  planLength: number;
+  planTitle: string;
   days: MealPlanDay[];
   selectedDay: MealPlanDay;
   selectedRecovery: RecoveryPlanDay;
