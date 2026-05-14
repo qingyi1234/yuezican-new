@@ -46,6 +46,15 @@ const scenarioDescriptions: Record<NutritionScenario, string> = {
   babyFood: "适合满6月龄后循序添加，不加盐糖蜂蜜，观察过敏。",
 };
 
+const peoplePhotoUrls: Record<NutritionScenario | "diabetes", string> = {
+  pregnancy: "https://images.pexels.com/photos/7055943/pexels-photo-7055943.jpeg?auto=compress&cs=tinysrgb&w=900",
+  postpartum: "https://images.unsplash.com/photo-1766299892744-a0b9d4e11707?auto=format&fit=crop&w=900&q=78",
+  lactation: "https://images.unsplash.com/photo-1766299892744-a0b9d4e11707?auto=format&fit=crop&w=900&q=78",
+  babyFood: "https://images.pexels.com/photos/7491105/pexels-photo-7491105.jpeg?auto=compress&cs=tinysrgb&w=900",
+  senior: "https://images.pexels.com/photos/7530824/pexels-photo-7530824.jpeg?auto=compress&cs=tinysrgb&w=900",
+  diabetes: "https://images.unsplash.com/photo-1766299892744-a0b9d4e11707?auto=format&fit=crop&w=900&q=78",
+};
+
 const scenarioExecutionNotes: Record<NutritionScenario, { title: string; summary: string; items: string[] }> = {
   pregnancy: {
     title: "孕期执行重点",
@@ -182,6 +191,13 @@ const mealTypeLabels: Record<Recipe["mealType"], string> = {
   soup: "汤饮",
 };
 
+const pageSteps: Array<{ id: PageMode; label: string; description: string }> = [
+  { id: "setup", label: "填写需求", description: "选择餐种和身体情况" },
+  { id: "plan", label: "查看方案", description: "三餐、加餐和每日建议" },
+  { id: "library", label: "食谱库", description: "检索菜品和标签" },
+  { id: "special", label: "专项推荐", description: "控糖、贫血和分娩方式" },
+];
+
 const specialTopics: Array<{
   id: SpecialTopic;
   title: string;
@@ -224,49 +240,65 @@ const specialTopics: Array<{
   },
 ];
 
-const seoKeywordGroups = [
-  {
-    title: "月子餐核心搜索词",
-    words: ["42天月子餐", "月子餐食谱", "产后月子餐", "顺产月子餐", "剖宫产月子餐", "月子餐三餐两点", "月子餐水果", "月子餐汤饮"],
-  },
-  {
-    title: "病种与目标词",
-    words: ["控糖月子餐", "妊娠糖尿病月子餐", "高血压月子餐", "贫血月子餐", "便秘月子餐", "清淡少盐月子餐", "产后控重食谱", "促进泌乳食谱"],
-  },
-  {
-    title: "人群营养词",
-    words: ["孕期营养餐", "泌乳期营养餐", "宝宝辅食", "6月龄辅食", "中老年营养餐", "低盐低脂食谱", "骨质疏松营养餐", "糖尿病老人食谱"],
-  },
-  {
-    title: "AI问答长尾词",
-    words: ["月子餐每天吃什么", "剖宫产后第一周吃什么", "月子餐怎么吃不发胖", "出奶吃什么比较科学", "宝宝辅食先加什么", "老人控糖晚餐怎么搭配"],
-  },
-];
-
 const geoArticleBlocks = [
   {
-    eyebrow: "GEO专题 01",
-    title: "42天月子餐怎么安排才营养又不容易发胖",
+    eyebrow: "营养建议 01",
+    title: "42天月子餐建议按阶段安排，不建议一味大补",
     body:
       "科学月子餐不是大鱼大肉和油腻浓汤，而是把谷薯、鱼禽蛋肉、奶豆、蔬菜、水果和少量坚果放进每天的结构里。产后第1-3天以清淡易消化为主，第4-7天逐步增加蛋白质和铁，第8-14天关注泌乳稳定，第15-42天把控重、便秘改善和长期哺乳饮食习惯一起纳入。本站的42天月子餐食谱会结合顺产、剖宫产、哺乳状态、过敏忌口和血糖管理自动调整，避免用红糖水、酒酿、浓汤或甜品替代正餐。",
   },
   {
-    eyebrow: "GEO专题 02",
-    title: "剖宫产月子餐与顺产月子餐有什么不同",
+    eyebrow: "营养建议 02",
+    title: "剖宫产早期建议先护胃肠和伤口，再逐步加蛋白",
     body:
       "剖宫产早期更重视伤口保护、胃肠耐受和少量多餐，前几天通常选择软粥、蒸蛋、鸡丝汤面、豆腐、熟软蔬菜等温和食物。顺产妈妈则更关注补液、补铁、盆底恢复和便秘预防。无论哪一种分娩方式，月子餐都不建议靠高油浓汤催乳，也不建议过早高强度塑形。系统会把剖宫产伤口恢复、贫血、便秘、堵奶风险和乳糖不耐受等因素转成可执行菜单和康复动作。",
   },
   {
-    eyebrow: "GEO专题 03",
-    title: "控糖月子餐：妊娠糖尿病和产后血糖管理怎么吃",
+    eyebrow: "营养建议 03",
+    title: "控糖月子餐建议主食定量，不建议直接断碳",
     body:
       "控糖月子餐的重点不是取消主食，而是把主食定量分配到三餐和加餐，优先选择燕麦、糙米、杂豆、全麦、藜麦等粗细搭配主食，并且每餐配足蔬菜和优质蛋白。水果安排在白天加餐，选择苹果、蓝莓、草莓、猕猴桃等小份量，不榨汁，不用甜汤和奶茶补能量。本站会在妊娠糖尿病、糖尿病或血糖偏高场景下自动减少甜品权重，提高控糖友好、清淡、低脂和膳食纤维菜品的推荐比例。",
   },
   {
-    eyebrow: "GEO专题 04",
-    title: "泌乳期营养餐和出奶食谱的真正重点",
+    eyebrow: "营养建议 04",
+    title: "泌乳期建议重视补液和规律排乳，不迷信浓汤",
     body:
       "出奶不是依赖某一种神奇食材，而是足量能量、优质蛋白、液体、休息和规律排乳共同作用。泌乳期营养餐可以安排低脂鱼汤、鸡丝清汤、豆腐汤、牛奶或无糖豆乳，同时保留鸡蛋、鱼禽肉、豆制品、绿叶菜和水果。堵奶风险高时，应减少高脂浓汤、油炸食物和大量甜品。本站把泌乳支持、堵奶风险、乳糖不耐受和控重目标放在同一个规则系统里，帮助家庭做出更稳妥的三餐两点方案。",
+  },
+];
+
+const carouselSlides = [
+  {
+    title: "42天月子餐阶段方案",
+    summary: "把清淡易消化、补铁补钙、稳定泌乳和控重恢复拆成可执行的每日菜单。",
+    bullets: ["三餐两点", "水果汤饮", "剖宫产/顺产适配"],
+    visual: "mother",
+    photo: peoplePhotoUrls.postpartum,
+    alt: "产后妈妈抱着新生宝宝的真实照片",
+  },
+  {
+    title: "控糖月子餐与血糖管理",
+    summary: "主食不断碳，重点控制份量、粗细搭配和水果时间，减少甜汤和高油点心。",
+    bullets: ["主食定量", "低糖加餐", "餐后轻活动"],
+    visual: "diabetes",
+    photo: peoplePhotoUrls.diabetes,
+    alt: "月子妈妈和宝宝的真实照片",
+  },
+  {
+    title: "宝宝辅食7天尝试计划",
+    summary: "满6月龄后从高铁米粉、肉泥、菜泥开始，单一食材少量尝试并观察过敏。",
+    bullets: ["不加盐糖", "高铁优先", "观察2-3天"],
+    visual: "baby",
+    photo: peoplePhotoUrls.babyFood,
+    alt: "宝宝坐在餐椅中吃辅食的真实照片",
+  },
+  {
+    title: "中老年慢病友好营养餐",
+    summary: "围绕控糖、低盐低脂、骨骼健康、维持肌肉和软烂易消化来做7天轮换。",
+    bullets: ["低盐低脂", "优质蛋白", "软烂易消化"],
+    visual: "senior",
+    photo: peoplePhotoUrls.senior,
+    alt: "中老年夫妻在厨房准备水果早餐的真实照片",
   },
 ];
 
@@ -290,6 +322,26 @@ const seoFaqs = [
   {
     question: "宝宝辅食和月子餐可以共用食谱吗？",
     answer: "不能共用。宝宝辅食需要按月龄、吞咽能力和过敏观察设计，1岁内不加盐、糖和蜂蜜，也不能使用成人汤底。本站把宝宝辅食做成独立7天方案。",
+  },
+  {
+    question: "月子餐早餐怎么搭配比较稳？",
+    answer: "早餐建议保留主食、蛋白和蔬菜，例如小米南瓜粥配蒸蛋、燕麦牛奶配鸡蛋青菜、鸡丝青菜软面。控糖人群要注意主食份量和不加糖。",
+  },
+  {
+    question: "月子餐加餐可以吃甜品吗？",
+    answer: "可以少量吃无加糖或低糖版本，例如无糖酸奶水果杯、红豆燕麦小碗、银耳梨羹。妊娠糖尿病或血糖偏高者要优先选择低糖加餐。",
+  },
+  {
+    question: "堵奶风险高还要喝下奶汤吗？",
+    answer: "堵奶风险高时不建议大量喝油腻浓汤。更重要的是规律排乳、补水、休息和低脂优质蛋白，汤饮可以选择撇油清汤或豆腐鱼片汤。",
+  },
+  {
+    question: "中老年营养餐和月子餐有什么区别？",
+    answer: "中老年营养餐更关注慢病管理、咀嚼吞咽能力、低盐低脂、骨骼健康和肌肉维护；月子餐更关注产后恢复、泌乳、伤口和盆底康复。",
+  },
+  {
+    question: "孕期营养餐需要和月子餐分开吗？",
+    answer: "需要分开。孕期更重视胎儿发育、产检风险、体重增长、铁钙叶酸和食品安全；月子餐则围绕产后恢复、泌乳和胃肠耐受设计。",
   },
 ];
 
@@ -704,6 +756,11 @@ function ProfileForm({
               <span className="scenarioIcon" aria-hidden="true" />
               <strong>{label}</strong>
               <small>{scenarioDescriptions[value]}</small>
+              <span
+                className="scenarioPhotoThumb"
+                style={{ backgroundImage: `url(${peoplePhotoUrls[value]})` }}
+                aria-hidden="true"
+              />
             </button>
           ))}
         </div>
@@ -864,27 +921,6 @@ function ProfileForm({
 function SeoKnowledgeSection() {
   return (
     <section className="seoSection" aria-label="月子餐SEO和GEO知识库">
-      <div className="seoIntro">
-        <p className="eyebrow">SEO / GEO 内容库</p>
-        <h2>围绕月子餐、控糖月子餐、泌乳餐和宝宝辅食的可引用答案</h2>
-        <p>
-          这一部分面向搜索引擎、AI问答摘要和真实用户，集中说明月子餐食谱、42天月子餐、剖宫产月子餐、妊娠糖尿病月子餐、泌乳期营养餐、宝宝辅食和中老年营养餐的核心原则。
-        </p>
-      </div>
-
-      <div className="seoKeywordGrid" aria-label="关键词覆盖">
-        {seoKeywordGroups.map((group) => (
-          <article key={group.title}>
-            <h3>{group.title}</h3>
-            <div>
-              {group.words.map((word) => (
-                <span key={word}>{word}</span>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
-
       <div className="geoArticleGrid">
         {geoArticleBlocks.map((block) => (
           <article key={block.title} className="geoArticleCard">
@@ -910,6 +946,123 @@ function SeoKnowledgeSection() {
         </div>
       </section>
     </section>
+  );
+}
+
+function NutritionCarousel() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const slide = carouselSlides[activeSlide];
+
+  const goToSlide = (index: number) => {
+    setActiveSlide((index + carouselSlides.length) % carouselSlides.length);
+  };
+
+  return (
+    <section className="carouselSection" aria-label="营养方案轮播">
+      <div className="carouselFrame">
+        <div className="carouselCopy">
+          <h2>{slide.title}</h2>
+          <p>{slide.summary}</p>
+          <div className="carouselTags">
+            {slide.bullets.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+          <div className="carouselControls">
+            <button type="button" onClick={() => goToSlide(activeSlide - 1)}>
+              上一页
+            </button>
+            <button type="button" onClick={() => goToSlide(activeSlide + 1)}>
+              下一页
+            </button>
+          </div>
+        </div>
+        <div className={`carouselVisual carousel-${slide.visual}`}>
+          <img src={slide.photo} alt={slide.alt} loading={activeSlide === 0 ? "eager" : "lazy"} />
+        </div>
+      </div>
+      <div className="carouselDots" aria-label="选择轮播页">
+        {carouselSlides.map((item, index) => (
+          <button
+            key={item.title}
+            className={index === activeSlide ? "selected" : ""}
+            type="button"
+            onClick={() => goToSlide(index)}
+            aria-label={`切换到${item.title}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PageTabs({ current, onNavigate }: { current: PageMode; onNavigate: (page: PageMode) => void }) {
+  return (
+    <nav className="pageTabs" aria-label="页面导航">
+      {pageSteps.map((step, index) => (
+        <button
+          key={step.id}
+          className={current === step.id ? "selected" : ""}
+          type="button"
+          onClick={() => onNavigate(step.id)}
+        >
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <strong>{step.label}</strong>
+          <small>{step.description}</small>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function DayNavigator({
+  total,
+  current,
+  onSelectDay,
+}: {
+  total: number;
+  current: number;
+  onSelectDay: (day: number) => void;
+}) {
+  const groups = Array.from({ length: Math.ceil(total / 7) }, (_, index) => {
+    const start = index * 7 + 1;
+    const end = Math.min(start + 6, total);
+    return { start, end };
+  });
+
+  return (
+    <div className="dayNavigator">
+      <div className="dayPager">
+        <button type="button" disabled={current <= 1} onClick={() => onSelectDay(current - 1)}>
+          上一天
+        </button>
+        <strong>
+          第 {current} / {total} 天
+        </strong>
+        <button type="button" disabled={current >= total} onClick={() => onSelectDay(current + 1)}>
+          下一天
+        </button>
+      </div>
+      <div className="dayGroupTabs" aria-label="按周快速跳转">
+        {groups.map((group) => (
+          <button
+            key={group.start}
+            className={current >= group.start && current <= group.end ? "selected" : ""}
+            type="button"
+            onClick={() => onSelectDay(group.start)}
+          >
+            {group.start}-{group.end}天
+          </button>
+        ))}
+      </div>
+      <div className="dayPicker" aria-label={`选择${total}天中的一天`}>
+        {Array.from({ length: total }, (_, index) => index + 1).map((day) => (
+          <button key={day} type="button" className={day === current ? "currentDay" : ""} onClick={() => onSelectDay(day)}>
+            {day}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1043,31 +1196,36 @@ function App() {
   };
 
   if (page === "library") {
-    return <RecipeLibrary onBack={() => setPage("plan")} />;
+    return (
+      <>
+        <PageTabs current={page} onNavigate={setPage} />
+        <RecipeLibrary onBack={() => setPage("plan")} />
+      </>
+    );
   }
 
   if (page === "special") {
     return (
-      <SpecialPage
-        activeTopic={activeSpecialTopic}
-        onSelectTopic={setActiveSpecialTopic}
-        onApply={applySpecialTopic}
-        onBack={() => setPage("plan")}
-      />
+      <>
+        <PageTabs current={page} onNavigate={setPage} />
+        <SpecialPage
+          activeTopic={activeSpecialTopic}
+          onSelectTopic={setActiveSpecialTopic}
+          onApply={applySpecialTopic}
+          onBack={() => setPage("plan")}
+        />
+      </>
     );
   }
 
   if (page === "setup") {
     return (
       <main>
+        <PageTabs current={page} onNavigate={setPage} />
         <section className="heroBand setupHero">
           <div className="heroInner">
-            <div>
-              <p className="eyebrow">月子餐个性化推荐</p>
-              <h1>专业规则推荐，让不同人群营养餐更清淡、更稳、更好执行</h1>
-              <p className="heroCopy">
-                系统会根据餐种、当前天数、过敏忌口和常见病史做规则推荐。月子餐保留产后与哺乳适配，宝宝辅食和中老年营养餐使用独立7天方案，不混用问卷。
-              </p>
+            <div className="heroLeadCarousel">
+              <NutritionCarousel />
             </div>
             <div className="heroShowcase">
               <HeroVisual />
@@ -1211,6 +1369,7 @@ function App() {
   return (
     <main className="planPage">
       <PrintPlan result={result} />
+      <PageTabs current={page} onNavigate={setPage} />
       <section className="planTop">
         <div className="planTopInner">
           <div>
@@ -1258,18 +1417,7 @@ function App() {
             <p className="eyebrow">{result.planLength}天日历</p>
             <h2>选择查看哪一天</h2>
           </div>
-          <div className="dayPicker" aria-label={`选择${result.planLength}天中的一天`}>
-            {result.days.map((day) => (
-              <button
-                key={day.day}
-                type="button"
-                className={day.day === profile.postpartumDay ? "currentDay" : ""}
-                onClick={() => setProfileField("postpartumDay", day.day)}
-              >
-                {day.day}
-              </button>
-            ))}
-          </div>
+          <DayNavigator total={result.planLength} current={selectedDay.day} onSelectDay={(day) => setProfileField("postpartumDay", day)} />
         </section>
 
         <section className="noticeGrid">
